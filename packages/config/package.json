@@ -1,0 +1,14 @@
+{
+  "name": "@shadowbroker/config",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "eslint.base.js",
+    "tsconfig.base.json",
+    "tailwind.base.ts"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@shadowbroker/api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "uvicorn src.main:app --reload --port 8080",
+    "start": "uvicorn src.main:app --host 0.0.0.0 --port 8080",
+    "typecheck": "echo 'Python typecheck via mypy optional'"
+  }
+}
