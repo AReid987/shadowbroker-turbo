@@ -16,7 +16,7 @@ import {
   TrendingUp,
   Search,
 } from "lucide-react";
-import { Panel, Terminal, Button } from "@shadowbroker/ui";
+import { Panel, Terminal, Button } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardStore } from "@/lib/store";
 import { LiveMap } from "./LiveMap";

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { MapEntity } from "@shadowbroker/types";
+import type { MapEntity } from "@/lib/types";
 import { Plane, Ship, Satellite, MapPin } from "lucide-react";
 
 interface MapPopupProps {

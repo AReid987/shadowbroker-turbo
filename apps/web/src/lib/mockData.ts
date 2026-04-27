@@ -1,4 +1,4 @@
-import type { MapEntity, NewsItem, NewsSource, MeshChannel, MeshMessage, PredictionMarket, RadioSignal, ShodanResult } from "@shadowbroker/types";
+import type { MapEntity, NewsItem, NewsSource, MeshChannel, MeshMessage, PredictionMarket, RadioSignal, ShodanResult } from "@/lib/types";
 
 export function generateMockEntities(count: number = 50): MapEntity[] {
   const types: MapEntity["type"][] = ["flight", "vessel", "satellite", "ground"];

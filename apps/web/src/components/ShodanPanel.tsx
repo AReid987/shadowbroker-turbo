@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Search, Globe, Server, AlertTriangle, Shield, Clock } from "lucide-react";
-import { Panel, Badge } from "@shadowbroker/ui";
+import { Panel, Badge } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 
 export function ShodanPanel() {

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Lock, Users, Send, Shield } from "lucide-react";
-import { Panel, Input } from "@shadowbroker/ui";
+import { Panel, Input } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 
 export function MeshChat() {

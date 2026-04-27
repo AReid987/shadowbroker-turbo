@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Eye, EyeOff, X } from "lucide-react";
-import { Input } from "@shadowbroker/ui";
+import { Input } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
 
 interface CovertLoginProps {

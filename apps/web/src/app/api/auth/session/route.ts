@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSessionValid } from "@shadowbroker/auth";
+import { isSessionValid } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("shadow_session")?.value;

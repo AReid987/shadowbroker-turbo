@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrendingUp, Volume2, Calendar, X } from "lucide-react";
-import { Panel, Badge, Button } from "@shadowbroker/ui";
+import { Panel, Badge, Button } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 
 export function PredictionMarkets() {

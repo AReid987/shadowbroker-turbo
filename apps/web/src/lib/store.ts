@@ -8,7 +8,7 @@ import type {
   PredictionMarket,
   RadioSignal,
   ShodanResult,
-} from "@shadowbroker/types";
+} from "@/lib/types";
 import { api } from "./api";
 
 interface DashboardState {

@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { MapEntity } from "@shadowbroker/types";
+import type { MapEntity } from "@/lib/types";
 import { MapPopup } from "./MapPopup";
 import { useDashboardStore } from "@/lib/store";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@shadowbroker/web",
+  "name": "shadowbroker-web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -10,10 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@shadowbroker/auth": "*",
-    "@shadowbroker/types": "*",
-    "@shadowbroker/ui": "*",
     "@types/supercluster": "^7.1.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "crypto-js": "^4.2.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.460.0",
@@ -23,10 +22,10 @@
     "react-dom": "^18.3.0",
     "react-map-gl": "^8.1.1",
     "supercluster": "^8.0.1",
+    "tailwind-merge": "^2.5.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@shadowbroker/config": "*",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",

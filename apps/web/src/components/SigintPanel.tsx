@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Radio, Play, Square, Activity } from "lucide-react";
-import { Panel, Badge } from "@shadowbroker/ui";
+import { Panel, Badge } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 
 function FrequencySpectrum({ signals }: { signals: { frequency: number; strength: number }[] }) {
