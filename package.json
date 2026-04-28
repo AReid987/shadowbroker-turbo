@@ -11,6 +11,9 @@
   "devDependencies": {
     "turbo": "^2.3.0"
   },
+  "engines": {
+    "node": "22.x"
+  },
   "packageManager": "npm@10.9.0",
   "workspaces": [
     "apps/*",
