@@ -57,7 +57,7 @@ REAL_CAMERAS = [
     {"id": "cam_015", "url": "http://80.153.121.210/mjpg/video.mjpg", "country": "DE", "city": "Munich", "type": "outdoor", "label": "Marienplatz"},
     {"id": "cam_016", "url": "http://80.14.196.176/mjpg/video.mjpg", "country": "FR", "city": "Paris", "type": "outdoor", "label": "Champs-Élysées"},
     {"id": "cam_017", "url": "http://82.127.89.48/mjpg/video.mjpg", "country": "FR", "city": "Nice", "type": "beach", "label": "Promenade des Anglais"},
-    {"id": "cam_018", "url": "http:://153.156.244.120/mjpg/video.mjpg", "country": "JP", "city": "Tokyo", "type": "traffic", "label": "Shibuya Crossing"},
+    {"id": "cam_018", "url": "http://153.156.244.120/mjpg/video.mjpg", "country": "JP", "city": "Tokyo", "type": "traffic", "label": "Shibuya Crossing"},
     {"id": "cam_019", "url": "http://153.156.244.121/mjpg/video.mjpg", "country": "JP", "city": "Osaka", "type": "outdoor", "label": "Dotonbori"},
     {"id": "cam_020", "url": "http://153.156.244.122/mjpg/video.mjpg", "country": "JP", "city": "Kyoto", "type": "temple", "label": "Fushimi Inari"},
     {"id": "cam_021", "url": "http://95.154.199.137/mjpg/video.mjpg", "country": "RU", "city": "Moscow", "type": "traffic", "label": "Tverskaya Street"},
