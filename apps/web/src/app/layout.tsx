@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "International Association of Spreadsheet Enthusiasts",
+  title: "Shadowbroker Turbo",
   description: "Promoting excellence in spreadsheet craftsmanship since 1987.",
 };
 
