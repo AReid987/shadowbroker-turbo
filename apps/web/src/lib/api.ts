@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://shadowbroker-api.onrender.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 async function fetchJson<T>(path: string, opts?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { cache: "no-store", ...opts });
