@@ -1,0 +1,18 @@
+{
+  "runtime": "edge",
+  "name": "api/flights",
+  "deploymentTarget": "v8-worker",
+  "entrypoint": "index.js",
+  "assets": [],
+  "framework": {
+    "slug": "nextjs",
+    "version": "15.5.15"
+  },
+  "environment": {
+    "__NEXT_BUILD_ID": "A5yuVjF5ut9CbVjLPHX6n",
+    "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "4DL1F1XFNIP4wKXUf2jHe18fu7KDIsJNzAtnMvTOQTQ=",
+    "__NEXT_PREVIEW_MODE_ID": "1ad057bd78939bbad649b9473f0b0d6e",
+    "__NEXT_PREVIEW_MODE_SIGNING_KEY": "a79eacc5b744264188e32686d148d0042882e7b6b824f35dede3b13b2c2c91de",
+    "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "8ef8ead0aeb9ba8bc7fa314a15da2a857985a51477c96b48ee94fcfaed8ef981"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_hz45xpQbYn07QdTSgYiAuhsYnAge",
+  "orgId": "team_DE0eCny4qE63Df3PfvvH4cCR",
+  "projectName": "web",
+  "settings": {
+    "createdAt": 1777278517043,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": "npm install",
+    "buildCommand": "cd apps/web && next build",
+    "outputDirectory": "apps/web/.next",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "22.x"
+  }
+}
