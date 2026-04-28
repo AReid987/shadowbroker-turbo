@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Query
+import os
+
+from fastapi import FastAPI, Query, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
@@ -14,6 +16,7 @@ from .services import (
     fetch_markets,
     fetch_satellites,
 )
+from . import codes as invite_codes
 
 app = FastAPI(title="Shadowbroker API", version="2.0.0")
 
@@ -40,6 +43,69 @@ async def health():
         version="2.0.0",
         timestamp=datetime.utcnow().isoformat(),
     )
+
+# ------------------------------------------------------------------
+# Auth / Invite Codes
+# ------------------------------------------------------------------
+class ValidateRequest(BaseModel):
+    key: str
+
+class ValidateResponse(BaseModel):
+    success: bool
+    error: str | None = None
+
+@app.post("/api/auth/validate", response_model=ValidateResponse)
+async def validate_auth(req: ValidateRequest):
+    """Validate an invite code or master key."""
+    master_key = os.environ.get("SECRET_KEY", "")
+    if req.key == master_key:
+        return ValidateResponse(success=True)
+    if invite_codes.validate_code(req.key):
+        return ValidateResponse(success=True)
+    return ValidateResponse(success=False, error="Invalid code")
+
+class GenerateCodeResponse(BaseModel):
+    code: str
+    label: str = ""
+
+class CodesListResponse(BaseModel):
+    codes: dict
+
+@app.post("/api/codes/generate")
+async def generate_code_endpoint(
+    label: str = "",
+    authorization: str = Header(default=""),
+):
+    """Generate a new invite code (admin only)."""
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    if not invite_codes.verify_admin_token(token):
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    code = invite_codes.create_code(label=label)
+    return {"code": code, "label": label}
+
+@app.get("/api/codes")
+async def list_codes_endpoint(
+    authorization: str = Header(default=""),
+):
+    """List all valid invite codes (admin only)."""
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    if not invite_codes.verify_admin_token(token):
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    return {"codes": invite_codes.list_codes()}
+
+@app.delete("/api/codes/{code}")
+async def revoke_code_endpoint(
+    code: str,
+    authorization: str = Header(default=""),
+):
+    """Revoke an invite code (admin only)."""
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    if not invite_codes.verify_admin_token(token):
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    existed = invite_codes.revoke_code(code)
+    if not existed:
+        raise HTTPException(status_code=404, detail="Code not found")
+    return {"revoked": code}
 
 # ------------------------------------------------------------------
 # Live Data

@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -30,7 +32,7 @@ export function useAuth() {
   const login = useCallback(async (key: string) => {
     setState((s) => ({ ...s, isLoading: true, error: null }));
     try {
-      const res = await fetch("/api/auth/validate", {
+      const res = await fetch(`${API_URL}/api/auth/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key }),
@@ -40,16 +42,25 @@ export function useAuth() {
         setState({ isAuthenticated: true, isLoading: false, error: null });
         return true;
       }
-      setState({ isAuthenticated: false, isLoading: false, error: data.error || "Invalid key" });
+      setState({
+        isAuthenticated: false,
+        isLoading: false,
+        error: data.error || "Invalid code",
+      });
       return false;
     } catch {
-      setState({ isAuthenticated: false, isLoading: false, error: "Network error" });
+      setState({
+        isAuthenticated: false,
+        isLoading: false,
+        error: "Network error",
+      });
       return false;
     }
   }, []);
 
   const logout = useCallback(() => {
-    document.cookie = "shadow_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie =
+      "shadow_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setState({ isAuthenticated: false, isLoading: false, error: null });
     window.location.href = "/";
   }, []);
