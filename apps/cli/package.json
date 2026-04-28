@@ -1,0 +1,15 @@
+{
+  "name": "@blacktivism/cli",
+  "version": "1.0.0",
+  "description": "Blacktivism invite code CLI",
+  "main": "src/index.js",
+  "bin": {
+    "sb-code": "src/index.js"
+  },
+  "scripts": {
+    "link": "npm link"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

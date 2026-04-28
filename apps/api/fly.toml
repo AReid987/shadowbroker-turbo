@@ -1,21 +1,21 @@
-app = "shadowbroker-api"
-primary_region = "iad"
+app = 'shadowbroker-api'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8080"
+  CORS_ORIGINS = '*'
+  PORT = '8080'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
 
 [[vm]]
-  cpu_kind = "shared"
-  cpus = 1
-  memory_mb = 256
+  size = 'shared-cpu-1x'
+  memory = '512mb'

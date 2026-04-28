@@ -20,7 +20,7 @@ const Terminal = React.forwardRef<HTMLDivElement, TerminalProps>(
         <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
         <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
         <span className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
-        <span className="ml-2 text-[10px] text-muted-foreground uppercase tracking-wider">shadowbroker</span>
+        <span className="ml-2 text-[10px] text-muted-foreground uppercase tracking-wider">blacktivism</span>
       </div>
       <div className="p-3 space-y-1 max-h-96 overflow-y-auto">
         {lines.map((line, i) => (

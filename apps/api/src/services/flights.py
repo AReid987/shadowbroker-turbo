@@ -6,13 +6,6 @@ from ..cache import cache
 
 OPENSKY_URL = "https://opensky-network.org/api/states/all"
 
-# Demo fallback data
-DEMO_FLIGHTS = [
-    {"id": "f1", "type": "flight", "label": "BA117 LHR→JFK", "position": {"lat": 51.47, "lng": -0.46}, "heading": 285, "altitude": 36000, "speed": 540, "metadata": {"type": "B777", "callsign": "BAW117"}, "timestamp": datetime.utcnow().isoformat()},
-    {"id": "f2", "type": "flight", "label": "DL4 JFK→CDG", "position": {"lat": 40.64, "lng": -73.78}, "heading": 65, "altitude": 32000, "speed": 510, "metadata": {"type": "A350", "callsign": "DAL4"}, "timestamp": datetime.utcnow().isoformat()},
-    {"id": "f3", "type": "flight", "label": "NH1 HND→LAX", "position": {"lat": 35.55, "lng": 139.78}, "heading": 45, "altitude": 41000, "speed": 560, "metadata": {"type": "A380", "callsign": "ANA1"}, "timestamp": datetime.utcnow().isoformat()},
-]
-
 def _transform_opensky(states: list) -> list[dict[str, Any]]:
     results = []
     for s in states[:50]:  # Limit to 50
@@ -55,6 +48,6 @@ async def fetch_flights() -> list[dict[str, Any]]:
             cache.set("flights", results, 30)
             return results
     except Exception:
-        # Fallback to demo data
-        cache.set("flights", DEMO_FLIGHTS, 30)
-        return DEMO_FLIGHTS
+        # Real data only — return empty on failure, never fake data
+        cache.set("flights", [], 30)
+        return []

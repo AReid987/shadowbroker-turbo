@@ -1,5 +1,5 @@
 """
-Simple invite-code management for Shadowbroker API.
+Simple invite-code management for Blacktivism API.
 
 Codes are stored in-memory and optionally synced to a JSON file
 so they survive container restarts on Render.
@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Configuration
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "change-me-in-production")
-CODES_FILE = os.environ.get("CODES_FILE", "/tmp/shadowbroker_codes.json")
+CODES_FILE = os.environ.get("CODES_FILE", "/tmp/blacktivism_codes.json")
 
 # In-memory store
 _valid_codes: Set[str] = set()

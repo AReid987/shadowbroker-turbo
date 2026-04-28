@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate access credentials for Shadowbroker Turbo
+ * Generate access credentials for Blacktivism Turbo
  *
  * Usage:
  *   node scripts/generate-key.js                          # Generate master admin key

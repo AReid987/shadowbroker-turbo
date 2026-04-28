@@ -15,6 +15,7 @@ import {
   Network,
   TrendingUp,
   Search,
+  Video,
 } from "lucide-react";
 import { Panel, Terminal, Button } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,6 +26,7 @@ import { MeshChat } from "./MeshChat";
 import { PredictionMarkets } from "./PredictionMarkets";
 import { SigintPanel } from "./SigintPanel";
 import { ShodanPanel } from "./ShodanPanel";
+import { CCTVPanel } from "./CCTVPanel";
 
 const NAV_ITEMS = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -34,6 +36,7 @@ const NAV_ITEMS = [
   { id: "markets", label: "Markets", icon: TrendingUp },
   { id: "sigint", label: "SIGINT", icon: Radio },
   { id: "shodan", label: "Shodan", icon: Search },
+  { id: "cctv", label: "CCTV Feeds", icon: Video },
   { id: "satellites", label: "Satellites", icon: Satellite },
   { id: "settings", label: "Settings", icon: Settings },
 ];
@@ -48,12 +51,15 @@ export function DashboardShell() {
     newsSources,
     signals,
     markets,
+    cctvCameras,
+    cctvTotal,
     backendOnline,
     refreshMap,
     refreshNews,
     refreshSigint,
     refreshMarkets,
     refreshMesh,
+    refreshCctv,
   } = useDashboardStore();
 
   // Initial data fetch
@@ -63,7 +69,8 @@ export function DashboardShell() {
     refreshSigint();
     refreshMarkets();
     refreshMesh();
-  }, [refreshMap, refreshNews, refreshSigint, refreshMarkets, refreshMesh]);
+    refreshCctv();
+  }, [refreshMap, refreshNews, refreshSigint, refreshMarkets, refreshMesh, refreshCctv]);
 
   // Polling per tab
   useEffect(() => {
@@ -93,7 +100,7 @@ export function DashboardShell() {
               animate={{ opacity: 1 }}
               className="font-mono text-sm font-bold tracking-widest text-sb-accent"
             >
-              SHADOWBROKER
+              BLACKTIVISM
             </motion.span>
           )}
           <button
@@ -148,7 +155,8 @@ export function DashboardShell() {
               Flights: {mapEntities.filter((e) => e.type === "flight").length} ·
               Vessels: {mapEntities.filter((e) => e.type === "vessel").length} ·
               News: {newsItems.length} ·
-              Signals: {signals.length}
+              Signals: {signals.length} ·
+              CCTV: {cctvTotal}
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono text-sb-muted">
@@ -166,6 +174,7 @@ export function DashboardShell() {
           {activeTab === "markets" && <PredictionMarkets />}
           {activeTab === "sigint" && <SigintPanel />}
           {activeTab === "shodan" && <ShodanPanel />}
+          {activeTab === "cctv" && <CCTVPanel />}
           {activeTab === "satellites" && <SatellitesTab />}
           {activeTab === "settings" && <SettingsTab />}
         </div>
@@ -175,7 +184,7 @@ export function DashboardShell() {
 }
 
 function OverviewTab() {
-  const { mapEntities, newsItems, newsSources, signals, markets, shodanResults, backendOnline } = useDashboardStore();
+  const { mapEntities, newsItems, newsSources, signals, markets, shodanResults, cctvTotal, backendOnline } = useDashboardStore();
   const activeSources = newsSources.filter((s) => s.enabled).length;
 
   return (
@@ -187,6 +196,7 @@ function OverviewTab() {
           { label: "Radio Signals", value: signals.length.toString(), status: "neutral" },
           { label: "News Sources", value: `${activeSources}/${newsSources.length}`, status: "neutral" },
           { label: "Markets", value: markets.length.toString(), status: "neutral" },
+          { label: "CCTV Feeds", value: cctvTotal.toString(), status: "neutral" },
           { label: "Shodan Hits", value: shodanResults.length.toString(), status: "neutral" },
         ].map((stat) => (
           <Panel key={stat.label} className="p-4">

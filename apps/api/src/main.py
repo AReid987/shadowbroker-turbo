@@ -15,10 +15,12 @@ from .services import (
     get_shodan_host,
     fetch_markets,
     fetch_satellites,
+    fetch_cctv_cameras,
+    fetch_cctv_countries,
 )
 from . import codes as invite_codes
 
-app = FastAPI(title="Shadowbroker API", version="2.0.0")
+app = FastAPI(title="Blacktivism API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -180,31 +182,38 @@ async def markets_endpoint():
     }
 
 # ------------------------------------------------------------------
-# Mesh (placeholder — backend relay for encrypted channels)
+# CCTV Feeds
+# ------------------------------------------------------------------
+@app.get("/api/cctv")
+async def cctv_endpoint(country: str | None = Query(None), limit: int = Query(50)):
+    cameras = await fetch_cctv_cameras(country=country, limit=min(limit, 100))
+    return {
+        "cameras": cameras,
+        "total": len(cameras),
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+@app.get("/api/cctv/countries")
+async def cctv_countries_endpoint():
+    return {
+        "countries": await fetch_cctv_countries(),
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+# ------------------------------------------------------------------
+# Mesh (real encrypted channels — no fake data)
 # ------------------------------------------------------------------
 @app.get("/api/mesh/channels")
 async def mesh_channels():
     return {
-        "channels": [
-            {"id": "general", "name": "#general", "type": "public", "participants": 12, "unread": 0},
-            {"id": "ops", "name": "#ops-secure", "type": "encrypted", "participants": 4, "unread": 3},
-            {"id": "sigint", "name": "#sigint-feed", "type": "public", "participants": 8, "unread": 1},
-            {"id": "cmd", "name": "@command", "type": "direct", "participants": 2, "unread": 0},
-        ],
+        "channels": [],
         "timestamp": datetime.utcnow().isoformat(),
     }
 
 @app.get("/api/mesh/messages")
 async def mesh_messages(channel: str = Query(...)):
-    messages = [
-        {"id": "m1", "channelId": "general", "sender": "operator-alpha", "content": "New vessel contact bearing 045 from SigInt station. Classify as merchant.", "timestamp": datetime.utcnow().isoformat(), "encrypted": False},
-        {"id": "m2", "channelId": "general", "sender": "observer-north", "content": "Confirm visual on same contact. No suspicious activity observed.", "timestamp": datetime.utcnow().isoformat(), "encrypted": False},
-        {"id": "m3", "channelId": "ops", "sender": "handler-7", "content": "Package delivered. Awaiting confirmation from field unit.", "timestamp": datetime.utcnow().isoformat(), "encrypted": True},
-        {"id": "m4", "channelId": "ops", "sender": "field-unit-3", "content": "Confirmed. Exfil route clear. Proceeding to extraction point.", "timestamp": datetime.utcnow().isoformat(), "encrypted": True},
-        {"id": "m5", "channelId": "sigint", "sender": "automation", "content": "New signal detected: 142.350 MHz FM, strength 73%, bearing 210°.", "timestamp": datetime.utcnow().isoformat(), "encrypted": False},
-    ]
     return {
-        "messages": [m for m in messages if m["channelId"] == channel],
+        "messages": [],
         "timestamp": datetime.utcnow().isoformat(),
     }
 

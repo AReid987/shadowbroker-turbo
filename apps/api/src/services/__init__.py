@@ -5,6 +5,7 @@ from .sigint import fetch_signals
 from .shodan_service import search_shodan, get_shodan_host
 from .markets import fetch_markets
 from .satellites import fetch_satellites
+from .cctv import fetch_cctv_cameras, fetch_cctv_countries
 
 __all__ = [
     "fetch_flights",
@@ -15,4 +16,6 @@ __all__ = [
     "get_shodan_host",
     "fetch_markets",
     "fetch_satellites",
+    "fetch_cctv_cameras",
+    "fetch_cctv_countries",
 ]

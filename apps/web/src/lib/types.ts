@@ -122,3 +122,22 @@ export interface ShodanResult {
   vulns: string[];
   lastUpdate: string;
 }
+
+// CCTV types
+export interface CCTVCamera {
+  id: string;
+  url: string;
+  country_code: string;
+  country: string;
+  city: string;
+  type: string;
+  label: string;
+  status: string;
+  timestamp: string;
+}
+
+export interface CCTVCountry {
+  code: string;
+  name: string;
+  count: number;
+}

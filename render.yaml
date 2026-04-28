@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: shadowbroker-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: CORS_ORIGINS
+        value: '*'
+      - key: PYTHONPATH
+        value: /app
+    healthCheckPath: /api/health
+    plan: free

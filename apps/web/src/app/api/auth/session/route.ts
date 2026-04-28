@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isSessionValid } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("shadow_session")?.value;
+  const token = req.cookies.get("blacktivism_session")?.value;
   if (!token || !isSessionValid(token)) {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }

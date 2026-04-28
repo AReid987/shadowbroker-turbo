@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Manage invite codes for Shadowbroker Turbo
+ * Manage invite codes for Blacktivism Turbo
  *
  * Usage:
  *   export ADMIN_TOKEN="your-admin-token"

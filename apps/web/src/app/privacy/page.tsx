@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Shadowbroker Turbo",
+  title: "Privacy Policy — Blacktivism Turbo",
 };
 
 export default function PrivacyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
         <div className="space-y-4 text-slate-600">
           <p>
-            Shadowbroker Turbo collects minimal data necessary to provide real-time
+            Blacktivism Turbo collects minimal data necessary to provide real-time
             intelligence dashboard services.
           </p>
           <h2 className="text-xl font-semibold text-slate-900 mt-6">Data Collection</h2>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateKey, createSession } from "@/lib/auth";
+import { createSession } from "@/lib/auth";
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
 const MAX_ATTEMPTS = 5;
@@ -36,21 +36,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
     }
 
-    const validation = await validateKey(key);
-    if (!validation.valid) {
+    // Proxy to backend invite-code validator
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://shadowbroker-api.onrender.com";
+    const backendRes = await fetch(`${API_URL}/api/auth/validate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key }),
+      next: { revalidate: 0 },
+    });
+
+    if (!backendRes.ok) {
       return NextResponse.json(
-        { error: validation.error || "Invalid key", remainingAttempts: rateLimit.remaining },
+        { error: "Validation failed", remainingAttempts: rateLimit.remaining },
         { status: 401 }
       );
     }
 
-    const session = await createSession(key, validation.userId);
+    const data = await backendRes.json();
+    if (!data.success) {
+      return NextResponse.json(
+        { error: data.error || "Invalid code", remainingAttempts: rateLimit.remaining },
+        { status: 401 }
+      );
+    }
+
+    // Create local session on success
+    const session = await createSession(key);
     if (!session.success) {
       return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
     }
 
     const res = NextResponse.json({ success: true });
-    res.cookies.set("shadow_session", session.token || "", {
+    res.cookies.set("blacktivism_session", session.token || "", {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",

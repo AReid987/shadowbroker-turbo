@@ -19,7 +19,14 @@ export const api = {
   },
   sigint: () => fetchJson<{ signals: unknown[]; timestamp: string }>("/api/sigint"),
   markets: () => fetchJson<{ markets: unknown[]; timestamp: string }>("/api/markets"),
-  shodan: (query: string) => fetchJson<{ query: string; results: unknown[]; total: number; demo: boolean }>(`/api/shodan/search?q=${encodeURIComponent(query)}`),
+  shodan: (query: string) => fetchJson<{ query: string; results: unknown[]; total: number }>(`/api/shodan/search?q=${encodeURIComponent(query)}`),
   meshChannels: () => fetchJson<{ channels: unknown[]; timestamp: string }>("/api/mesh/channels"),
   meshMessages: (channel: string) => fetchJson<{ messages: unknown[]; timestamp: string }>(`/api/mesh/messages?channel=${encodeURIComponent(channel)}`),
+  cctv: (country?: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (country) params.set("country", country);
+    if (limit) params.set("limit", String(limit));
+    return fetchJson<{ cameras: unknown[]; total: number; timestamp: string }>(`/api/cctv?${params}`);
+  },
+  cctvCountries: () => fetchJson<{ countries: unknown[]; timestamp: string }>("/api/cctv/countries"),
 };

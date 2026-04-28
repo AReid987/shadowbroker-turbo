@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useEffect } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
 interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -20,7 +18,7 @@ export function useAuth() {
   useEffect(() => {
     const token = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("shadow_session="))
+      .find((row) => row.startsWith("blacktivism_session="))
       ?.split("=")[1];
     if (token) {
       setState((s) => ({ ...s, isAuthenticated: true, isLoading: false }));
@@ -32,7 +30,7 @@ export function useAuth() {
   const login = useCallback(async (key: string) => {
     setState((s) => ({ ...s, isLoading: true, error: null }));
     try {
-      const res = await fetch(`${API_URL}/api/auth/validate`, {
+      const res = await fetch(`/api/auth/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key }),
@@ -60,7 +58,7 @@ export function useAuth() {
 
   const logout = useCallback(() => {
     document.cookie =
-      "shadow_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      "blacktivism_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setState({ isAuthenticated: false, isLoading: false, error: null });
     window.location.href = "/";
   }, []);

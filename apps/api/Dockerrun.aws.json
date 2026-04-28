@@ -1,0 +1,17 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "067935475530.dkr.ecr.us-east-1.amazonaws.com/shadowbroker-api:latest",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8080",
+      "HostPort": "8080"
+    }
+  ],
+  "Environment": [
+    {"Name": "CORS_ORIGINS", "Value": "*"},
+    {"Name": "NEXT_PUBLIC_API_URL", "Value": "https://web-aigency0.vercel.app"}
+  ]
+}

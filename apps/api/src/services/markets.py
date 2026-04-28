@@ -5,12 +5,6 @@ from ..cache import cache
 
 MANIFOLD_URL = "https://api.manifold.markets/v0/markets"
 
-DEMO_MARKETS = [
-    {"id": "m1", "title": "Will a major shipping lane close due to conflict in Q2 2025?", "category": "Geopolitics", "outcomes": [{"id": "o1", "label": "Yes", "probability": 0.34, "stake": 14200}, {"id": "o2", "label": "No", "probability": 0.66, "stake": 27800}], "volume": 42000, "closingDate": "2025-06-30", "status": "open"},
-    {"id": "m2", "title": "Will a critical zero-day in open-source infrastructure be exploited at scale?", "category": "Cybersecurity", "outcomes": [{"id": "o1", "label": "Yes, within 30 days", "probability": 0.52, "stake": 8900}, {"id": "o2", "label": "Yes, within 90 days", "probability": 0.31, "stake": 5300}, {"id": "o3", "label": "No", "probability": 0.17, "stake": 2900}], "volume": 17100, "closingDate": "2025-04-15", "status": "open"},
-    {"id": "m3", "title": "Will satellite imagery resolution commercially available exceed 25cm by EOY?", "category": "Technology", "outcomes": [{"id": "o1", "label": "Yes", "probability": 0.71, "stake": 34500}, {"id": "o2", "label": "No", "probability": 0.29, "stake": 14100}], "volume": 48600, "closingDate": "2025-12-31", "status": "open"},
-]
-
 async def fetch_markets() -> list[dict[str, Any]]:
     cached = cache.get("markets")
     if cached:
@@ -44,5 +38,6 @@ async def fetch_markets() -> list[dict[str, Any]]:
             cache.set("markets", results, 300)
             return results
     except Exception:
-        cache.set("markets", DEMO_MARKETS, 300)
-        return DEMO_MARKETS
+        # Real data only — return empty on failure, never fake data
+        cache.set("markets", [], 300)
+        return []
