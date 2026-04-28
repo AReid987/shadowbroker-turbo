@@ -2,7 +2,6 @@ services:
   - type: web
     name: shadowbroker-api
     runtime: docker
-    rootDir: apps/api
     dockerfilePath: ./Dockerfile
     envVars:
       - key: PORT
