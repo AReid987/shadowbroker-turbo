@@ -6,6 +6,7 @@ from ..cache import cache
 
 OPENSKY_URL = "https://opensky-network.org/api/states/all"
 
+
 def _transform_opensky(states: list) -> list[dict[str, Any]]:
     results = []
     for s in states[:50]:  # Limit to 50
@@ -33,13 +34,14 @@ def _transform_opensky(states: list) -> list[dict[str, Any]]:
         })
     return results
 
+
 async def fetch_flights() -> list[dict[str, Any]]:
     cached = cache.get("flights")
-    if cached:
+    if cached is not None:
         return cached
 
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=20.0) as client:
             resp = await client.get(OPENSKY_URL)
             resp.raise_for_status()
             data = resp.json()
@@ -48,6 +50,5 @@ async def fetch_flights() -> list[dict[str, Any]]:
             cache.set("flights", results, 30)
             return results
     except Exception:
-        # Real data only — return empty on failure, never fake data
-        cache.set("flights", [], 30)
+        # Don't cache failures — allow quick retry
         return []

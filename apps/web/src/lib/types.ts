@@ -98,9 +98,11 @@ export interface MarketOutcome {
 export interface RadioSignal {
   id: string;
   frequency: number;
-  mode: 'AM' | 'FM' | 'SSB' | 'CW' | 'DIGITAL';
+  mode: 'AM' | 'FM' | 'SSB' | 'USB' | 'LSB' | 'CW' | 'DIGITAL';
   strength: number;
   label?: string;
+  band?: string;
+  type?: string;
   latitude?: number;
   longitude?: number;
   timestamp: string;

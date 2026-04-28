@@ -155,8 +155,12 @@ async def news_endpoint(
 # ------------------------------------------------------------------
 @app.get("/api/sigint")
 async def sigint_endpoint():
+    result = await fetch_signals()
     return {
-        "signals": await fetch_signals(),
+        "signals": result.get("signals", []),
+        "receivers": result.get("receivers", []),
+        "count": result.get("count", 0),
+        "receiverCount": result.get("receiverCount", 0),
         "timestamp": datetime.utcnow().isoformat(),
     }
 
