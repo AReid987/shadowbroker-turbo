@@ -36,3 +36,4 @@ npm-debug.log*
 *.tsbuildinfo
 __pycache__/
 *.pyc
+.vercel/output
