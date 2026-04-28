@@ -36,15 +36,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
     }
 
-    const isValid = await validateKey(key);
-    if (!isValid) {
+    const validation = await validateKey(key);
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: "Invalid key", remainingAttempts: rateLimit.remaining },
+        { error: validation.error || "Invalid key", remainingAttempts: rateLimit.remaining },
         { status: 401 }
       );
     }
 
-    const session = await createSession(key);
+    const session = await createSession(key, validation.userId);
     if (!session.success) {
       return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
     }

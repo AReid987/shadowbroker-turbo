@@ -114,21 +114,12 @@ export function DecoyLanding() {
       <footer className="border-t bg-white mt-16">
         <div className="mx-auto max-w-5xl px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <p>© 2025 International Association of Spreadsheet Enthusiasts</p>
-          <div className="flex items-center gap-4">
-            <a
-              href="/privacy"
-              className="hover:text-slate-700 transition-colors"
-            >
-              Privacy Policy
-            </a>
-            <button
-              onClick={() => setShowLogin(true)}
-              className="text-slate-400 hover:text-slate-600 transition-colors text-xs"
-              title="Admin Access"
-            >
-              Admin
-            </button>
-          </div>
+          <button
+            onClick={() => setShowLogin(true)}
+            className="hover:text-slate-700 transition-colors"
+          >
+            Privacy Policy
+          </button>
         </div>
       </footer>
 
