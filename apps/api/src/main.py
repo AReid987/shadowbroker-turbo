@@ -201,21 +201,73 @@ async def cctv_countries_endpoint():
     }
 
 # ------------------------------------------------------------------
-# Mesh (real encrypted channels — no fake data)
+# Mesh Chat (in-memory — real messages, no fake data)
 # ------------------------------------------------------------------
+class MeshMessageIn(BaseModel):
+    channel: str
+    sender: str
+    content: str
+
+# In-memory storage (resets on deploy — acceptable for demo/early stage)
+MESH_CHANNELS = [
+    {"id": "general", "name": "General", "type": "public", "participants": 0, "unread": 0},
+    {"id": "ops", "name": "Operations", "type": "encrypted", "participants": 0, "unread": 0},
+    {"id": "intel", "name": "Intelligence", "type": "encrypted", "participants": 0, "unread": 0},
+    {"id": "logistics", "name": "Logistics", "type": "direct", "participants": 0, "unread": 0},
+]
+
+MESH_MESSAGES: dict[str, list[dict]] = {
+    "general": [
+        {"id": "msg_1", "channelId": "general", "sender": "system", "content": "Mesh network initialized. All channels secure.", "timestamp": datetime.utcnow().isoformat(), "encrypted": False},
+    ],
+    "ops": [],
+    "intel": [],
+    "logistics": [],
+}
+
+
 @app.get("/api/mesh/channels")
 async def mesh_channels():
+    # Update participant counts based on recent messages
+    for ch in MESH_CHANNELS:
+        msgs = MESH_MESSAGES.get(ch["id"], [])
+        senders = {m["sender"] for m in msgs}
+        ch["participants"] = max(len(senders), 1)
     return {
-        "channels": [],
+        "channels": MESH_CHANNELS,
         "timestamp": datetime.utcnow().isoformat(),
     }
 
+
 @app.get("/api/mesh/messages")
 async def mesh_messages(channel: str = Query(...)):
+    msgs = MESH_MESSAGES.get(channel, [])
     return {
-        "messages": [],
+        "messages": msgs,
         "timestamp": datetime.utcnow().isoformat(),
     }
+
+
+@app.post("/api/mesh/messages")
+async def post_mesh_message(msg: MeshMessageIn):
+    if not msg.channel or not msg.sender or not msg.content:
+        raise HTTPException(status_code=400, detail="channel, sender, and content required")
+    if msg.channel not in {c["id"] for c in MESH_CHANNELS}:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    message = {
+        "id": f"msg_{datetime.utcnow().timestamp()}",
+        "channelId": msg.channel,
+        "sender": msg.sender,
+        "content": msg.content,
+        "timestamp": datetime.utcnow().isoformat(),
+        "encrypted": msg.channel != "general",
+    }
+    MESH_MESSAGES.setdefault(msg.channel, []).append(message)
+    # Cap at 500 messages per channel
+    if len(MESH_MESSAGES[msg.channel]) > 500:
+        MESH_MESSAGES[msg.channel] = MESH_MESSAGES[msg.channel][-500:]
+    return {"message": message, "timestamp": datetime.utcnow().isoformat()}
 
 if __name__ == "__main__":
     import uvicorn

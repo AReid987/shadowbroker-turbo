@@ -42,6 +42,7 @@ interface DashboardState {
   setMeshMessages: (messages: MeshMessage[]) => void;
   setActiveChannel: (id: string) => void;
   refreshMesh: () => Promise<void>;
+  sendMessage: (content: string) => Promise<void>;
 
   // Markets
   markets: PredictionMarket[];
@@ -123,6 +124,20 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       const ch = await api.meshChannels();
       const msg = await api.meshMessages(get().activeChannel);
       set({ meshChannels: ch.channels as MeshChannel[], meshMessages: msg.messages as MeshMessage[], backendOnline: true });
+    } catch {
+      set({ backendOnline: false });
+    }
+  },
+  sendMessage: async (content: string) => {
+    const channel = get().activeChannel;
+    if (!content.trim() || !channel) return;
+    try {
+      const data = await api.sendMessage(channel, "operator", content.trim());
+      const msg = data.message as MeshMessage;
+      set((state) => ({
+        meshMessages: [...state.meshMessages, msg],
+        backendOnline: true,
+      }));
     } catch {
       set({ backendOnline: false });
     }

@@ -1,7 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://shadowbroker-api.onrender.com";
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
+async function fetchJson<T>(path: string, opts?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, { cache: "no-store", ...opts });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
@@ -22,6 +22,12 @@ export const api = {
   shodan: (query: string) => fetchJson<{ query: string; results: unknown[]; total: number }>(`/api/shodan/search?q=${encodeURIComponent(query)}`),
   meshChannels: () => fetchJson<{ channels: unknown[]; timestamp: string }>("/api/mesh/channels"),
   meshMessages: (channel: string) => fetchJson<{ messages: unknown[]; timestamp: string }>(`/api/mesh/messages?channel=${encodeURIComponent(channel)}`),
+  sendMessage: (channel: string, sender: string, content: string) =>
+    fetchJson<{ message: unknown; timestamp: string }>("/api/mesh/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channel, sender, content }),
+    }),
   cctv: (country?: string, limit?: number) => {
     const params = new URLSearchParams();
     if (country) params.set("country", country);

@@ -7,8 +7,9 @@ import { Panel, Input } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 
 export function MeshChat() {
-  const { meshChannels, meshMessages, activeChannel, setActiveChannel } = useDashboardStore();
+  const { meshChannels, meshMessages, activeChannel, setActiveChannel, sendMessage } = useDashboardStore();
   const [draft, setDraft] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const channelMessages = meshMessages.filter((m) => m.channelId === activeChannel);
@@ -17,6 +18,15 @@ export function MeshChat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [channelMessages]);
+
+  const handleSend = async () => {
+    const text = draft.trim();
+    if (!text || isSending) return;
+    setIsSending(true);
+    setDraft("");
+    await sendMessage(text);
+    setIsSending(false);
+  };
 
   return (
     <div className="flex gap-4 h-[calc(100vh-140px)]">
@@ -95,12 +105,16 @@ export function MeshChat() {
               placeholder="Type a message..."
               className="flex-1 h-10 bg-black/30 border-sb-border text-sb-text placeholder:text-sb-muted"
               onKeyDown={(e) => {
-                if (e.key === "Enter" && draft.trim()) {
-                  setDraft("");
+                if (e.key === "Enter" && draft.trim() && !isSending) {
+                  handleSend();
                 }
               }}
             />
-            <button className="h-10 w-10 rounded-lg bg-sb-accent text-black flex items-center justify-center hover:bg-sb-accentDim transition-colors">
+            <button
+              onClick={handleSend}
+              disabled={isSending || !draft.trim()}
+              className="h-10 w-10 rounded-lg bg-sb-accent text-black flex items-center justify-center hover:bg-sb-accentDim transition-colors disabled:opacity-50"
+            >
               <Send className="h-4 w-4" />
             </button>
           </div>

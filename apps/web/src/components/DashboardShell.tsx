@@ -81,9 +81,10 @@ export function DashboardShell() {
       if (activeTab === "sigint") refreshSigint();
       if (activeTab === "markets") refreshMarkets();
       if (activeTab === "mesh") refreshMesh();
+      if (activeTab === "cctv") refreshCctv();
     }, 30000);
     return () => clearInterval(interval);
-  }, [activeTab, backendOnline, refreshMap, refreshNews, refreshSigint, refreshMarkets, refreshMesh]);
+  }, [activeTab, backendOnline, refreshMap, refreshNews, refreshSigint, refreshMarkets, refreshMesh, refreshCctv]);
 
   return (
     <div className="h-screen flex overflow-hidden bg-sb-black text-sb-text">

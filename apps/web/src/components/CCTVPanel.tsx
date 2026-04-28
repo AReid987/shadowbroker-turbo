@@ -7,10 +7,18 @@ import { Panel, Badge } from "@/components/ui";
 import { useDashboardStore } from "@/lib/store";
 import type { CCTVCamera } from "@/lib/types";
 
-function CameraCard({ camera, index }: { camera: CCTVCamera; index: number }) {
+function CameraCard({ camera, index, refreshKey }: { camera: CCTVCamera; index: number; refreshKey: number }) {
   const [expanded, setExpanded] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+
+  // Reset loaded state when refreshKey changes
+  useEffect(() => {
+    setLoaded(false);
+    setError(false);
+  }, [refreshKey]);
+
+  const imageUrl = refreshKey > 0 ? `${camera.url}${camera.url.includes('?') ? '&' : '?'}_t=${refreshKey}` : camera.url;
 
   return (
     <>
@@ -23,7 +31,7 @@ function CameraCard({ camera, index }: { camera: CCTVCamera; index: number }) {
       >
         {!error ? (
           <img
-            src={camera.url}
+            src={imageUrl}
             alt={camera.label}
             className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setLoaded(true)}
@@ -82,7 +90,7 @@ function CameraCard({ camera, index }: { camera: CCTVCamera; index: number }) {
             <div className="aspect-video rounded-lg overflow-hidden border border-sb-border bg-black">
               {!error ? (
                 <img
-                  src={camera.url}
+                  src={imageUrl}
                   alt={camera.label}
                   className="w-full h-full object-cover"
                   onError={() => setError(true)}
@@ -118,6 +126,7 @@ export function CCTVPanel() {
   } = useDashboardStore();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     refreshCctv(cctvSelectedCountry || undefined);
@@ -125,6 +134,7 @@ export function CCTVPanel() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setRefreshKey(Date.now());
     await refreshCctv(cctvSelectedCountry || undefined);
     setIsRefreshing(false);
   };
@@ -192,7 +202,7 @@ export function CCTVPanel() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {cctvCameras.map((camera, i) => (
-            <CameraCard key={camera.id} camera={camera} index={i} />
+            <CameraCard key={camera.id} camera={camera} index={i} refreshKey={refreshKey} />
           ))}
         </div>
       )}

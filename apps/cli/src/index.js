@@ -1,153 +1,100 @@
 #!/usr/bin/env node
-/**
- * sb-code — Blacktivism Invite Code CLI
- *
- * Usage:
- *   sb-code generate [label]     Generate a new invite code
- *   sb-code list                 List all active codes
- *   sb-code revoke <code>        Revoke a code
- *   sb-code help                 Show this help
- *
- * Environment:
- *   ADMIN_TOKEN   Required. Admin bearer token.
- *   API_URL       Optional. Backend URL.
- */
 
-const API_URL = process.env.API_URL || "https://shadowbroker-api.onrender.com";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+const API_URL = process.env.API_URL || "https://shadowbroker-api.onrender.com";
 
-const C = {
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
-  dim: "\x1b[2m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  cyan: "\x1b[36m",
-};
-
-function box(title, lines) {
-  const width = Math.max(title.length, ...lines.map((l) => l.replace(/\x1b\[\d+m/g, "").length)) + 4;
-  const top = "╔" + "═".repeat(width - 2) + "╗";
-  const mid = "║" + " " + C.bold + title.padEnd(width - 3) + C.reset + "║";
-  const bot = "╚" + "═".repeat(width - 2) + "╝";
-  console.log("\n" + C.cyan + top + C.reset);
-  console.log(C.cyan + mid + C.reset);
-  for (const line of lines) {
-    const plain = line.replace(/\x1b\[\d+m/g, "");
-    const pad = width - 3 - plain.length;
-    console.log(C.cyan + "║" + C.reset + " " + line + " ".repeat(Math.max(0, pad)) + C.cyan + "║" + C.reset);
-  }
-  console.log(C.cyan + bot + C.reset + "\n");
-}
-
-function usage() {
-  console.log(`
-${C.bold}sb-code${C.reset} — Shadowbroker Invite Code CLI
-
-${C.bold}Usage:${C.reset}
-  sb-code generate [label]     Generate a new invite code
-  sb-code list                 List all active codes
-  sb-code revoke <code>        Revoke a code
-
-${C.bold}Environment:${C.reset}
-  ADMIN_TOKEN   Required. Set in ~/.zshrc or ~/.bashrc:
-                export ADMIN_TOKEN="sb-admin-d5df6d98ee5f01f7846e28ce0690e3ae"
-  API_URL       Optional. Default: ${API_URL}
-`);
-  process.exit(1);
-}
+// Simple ANSI helpers (no deps)
+const g = (s) => `\x1b[32m${s}\x1b[0m`;
+const r = (s) => `\x1b[31m${s}\x1b[0m`;
+const c = (s) => `\x1b[36m${s}\x1b[0m`;
+const y = (s) => `\x1b[33m${s}\x1b[0m`;
+const b = (s) => `\x1b[1m${s}\x1b[0m`;
 
 async function request(path, opts = {}) {
+  if (!ADMIN_TOKEN) {
+    throw new Error("ADMIN_TOKEN not set. Set the env var and try again.");
+  }
   const url = `${API_URL}${path}`;
   const res = await fetch(url, {
     ...opts,
     headers: {
       Authorization: `Bearer ${ADMIN_TOKEN}`,
       "Content-Type": "application/json",
-      ...opts.headers,
+      ...(opts.headers || {}),
     },
   });
-  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.detail || `HTTP ${res.status}`);
+    const txt = await res.text().catch(() => "");
+    throw new Error(`${res.status} ${res.statusText}${txt ? " — " + txt : ""}`);
   }
-  return data;
+  return res.json().catch(() => ({}));
 }
 
 async function generate(label = "") {
-  const qs = label ? `?label=${encodeURIComponent(label)}` : "";
-  const data = await request(`/api/codes/generate${qs}`, { method: "POST" });
-  box("NEW INVITE CODE", [
-    `${C.bold}Code:${C.reset}  ${C.green}${data.code}${C.reset}`,
-    ...(data.label ? [`${C.bold}Label:${C.reset} ${data.label}`] : []),
-  ]);
-  console.log("Give this code to the user. They enter it in the login modal.");
-  console.log("(Click 'Privacy Policy' on the site to open the modal)\n");
+  const data = await request("/api/codes/generate", {
+    method: "POST",
+    body: JSON.stringify({ label }),
+  });
+  if (data.code) {
+    console.log(g("Generated invite code:"));
+    console.log(b(data.code));
+    if (data.label) console.log(`Label: ${data.label}`);
+    console.log(`Expires: ${data.expires_at || "never"}`);
+  } else {
+    console.log(r("Failed to generate code"), data);
+    process.exit(1);
+  }
 }
 
 async function list() {
-  const data = await request("/api/codes", { method: "GET" });
-  const entries = Object.entries(data.codes || {});
+  const data = await request("/api/codes");
+  const codes = data.codes || {};
+  const entries = Object.entries(codes);
   if (entries.length === 0) {
-    console.log("\nNo active codes found.\n");
+    console.log(y("No invite codes found."));
     return;
   }
-  box("ACTIVE INVITE CODES", [
-    `${entries.length} code(s) active:`,
-    "",
-    ...entries.map(([code, meta]) => {
-      const label = meta.label ? ` ${C.dim}(${meta.label})${C.reset}` : "";
-      return `  ${C.green}${code}${C.reset}${label}`;
-    }),
-  ]);
+  console.log(c(`Invite codes (${entries.length}):`));
+  console.log("-".repeat(60));
+  entries.forEach(([code, info]) => {
+    const status = info.uses > 0 ? r("USED") : g("ACTIVE");
+    const line = `${b(code)}  ${status}  uses:${info.uses}  ${info.label || ""}`;
+    console.log(line);
+  });
 }
 
 async function revoke(code) {
-  await request(`/api/codes/${code}`, { method: "DELETE" });
-  console.log(`\n${C.green}✓${C.reset} Code revoked: ${code}\n`);
-}
-
-async function main() {
-  if (!ADMIN_TOKEN) {
-    console.error(`\n${C.red}Error:${C.reset} ADMIN_TOKEN is not set.`);
-    console.error(`Run: ${C.yellow}export ADMIN_TOKEN="sb-admin-d5df6d98ee5f01f7846e28ce0690e3ae"${C.reset}\n`);
+  if (!code) {
+    console.log(r("Usage: sb-code revoke <code>"));
     process.exit(1);
   }
+  await request(`/api/codes/${code}`, { method: "DELETE" });
+  console.log(g(`Revoked ${code}`));
+}
 
-  const [cmd, ...args] = process.argv.slice(2);
-
+const cmd = process.argv[2];
+(async () => {
   try {
     switch (cmd) {
       case "generate":
-      case "g":
-      case "gen": {
-        const label = args.join(" ");
-        await generate(label);
+        await generate(process.argv[3] || "");
         break;
-      }
       case "list":
-      case "ls":
-      case "l":
         await list();
         break;
       case "revoke":
-      case "rm":
-      case "delete": {
-        if (!args[0]) usage();
-        await revoke(args[0]);
+        await revoke(process.argv[3]);
         break;
-      }
-      case "help":
-      case "-h":
-      case "--help":
       default:
-        usage();
+        console.log(c("Blacktivism Invite Code CLI"));
+        console.log("Usage:");
+        console.log("  sb-code generate [label]   Create a new invite code");
+        console.log("  sb-code list               List all invite codes");
+        console.log("  sb-code revoke <code>      Revoke an invite code");
+        process.exit(cmd ? 1 : 0);
     }
   } catch (err) {
-    console.error(`\n${C.red}Error:${C.reset} ${err.message}\n`);
+    console.error(r(err.message));
     process.exit(1);
   }
-}
-
-main();
+})();
