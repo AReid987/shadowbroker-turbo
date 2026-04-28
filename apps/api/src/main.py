@@ -31,7 +31,7 @@ app.add_middleware(
 )
 
 # ------------------------------------------------------------------
-# Health
+# Health / Status
 # ------------------------------------------------------------------
 class HealthResponse(BaseModel):
     status: str
@@ -45,6 +45,49 @@ async def health():
         version="2.0.0",
         timestamp=datetime.utcnow().isoformat(),
     )
+
+
+@app.get("/api/status")
+async def status():
+    """Check which data sources are reachable from this server."""
+    results = {}
+    import httpx
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            r = await client.get("https://opensky-network.org/api/states/all")
+            results["opensky"] = {"ok": r.status_code == 200, "status": r.status_code}
+        except Exception as e:
+            results["opensky"] = {"ok": False, "error": str(e)}
+
+        try:
+            r = await client.get("https://meri.digitraffic.fi/api/ais/v1/locations")
+            results["digitraffic"] = {"ok": r.status_code == 200, "status": r.status_code}
+        except Exception as e:
+            results["digitraffic"] = {"ok": False, "error": str(e)}
+
+        try:
+            r = await client.get("https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=json")
+            results["celestrak"] = {"ok": r.status_code == 200, "status": r.status_code}
+        except Exception as e:
+            results["celestrak"] = {"ok": False, "error": str(e)}
+
+        try:
+            r = await client.get("https://feeds.bbci.co.uk/news/rss.xml")
+            results["bbc_rss"] = {"ok": r.status_code == 200, "status": r.status_code}
+        except Exception as e:
+            results["bbc_rss"] = {"ok": False, "error": str(e)}
+
+        try:
+            r = await client.get("https://api.manifold.markets/v0/markets?limit=1")
+            results["manifold"] = {"ok": r.status_code == 200, "status": r.status_code}
+        except Exception as e:
+            results["manifold"] = {"ok": False, "error": str(e)}
+
+    return {
+        "server": "online",
+        "timestamp": datetime.utcnow().isoformat(),
+        "sources": results,
+    }
 
 # ------------------------------------------------------------------
 # Auth / Invite Codes
