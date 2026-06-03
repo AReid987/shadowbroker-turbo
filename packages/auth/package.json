@@ -11,8 +11,8 @@
     "crypto-js": "^4.2.0"
   },
   "devDependencies": {
-    "@shadowbroker/config": "*",
-    "@shadowbroker/types": "*",
+    "@shadowbroker/config": "workspace:*",
+    "@shadowbroker/types": "workspace:*",
     "@types/crypto-js": "^4.2.2",
     "typescript": "^5.6.0"
   }

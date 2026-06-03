@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, Query, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,7 @@ from .services import (
     fetch_satellites,
     fetch_cctv_cameras,
     fetch_cctv_countries,
+    refresh_cctv_pipeline,
 )
 from . import codes as invite_codes
 
@@ -29,6 +31,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Ensure data directories exist on startup."""
+    data_dir = Path(__file__).resolve().parent / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    from .services.cctv_pipeline import init_db
+    init_db()
 
 # ------------------------------------------------------------------
 # Health / Status
@@ -242,8 +253,15 @@ async def cctv_endpoint(country: str | None = Query(None), limit: int = Query(50
 
 @app.get("/api/cctv/countries")
 async def cctv_countries_endpoint():
+    return await fetch_cctv_countries()
+
+
+@app.post("/api/cctv/refresh")
+async def cctv_refresh_endpoint():
+    """Trigger a full CCTV pipeline refresh (ingests all sources)."""
+    result = await refresh_cctv_pipeline()
     return {
-        "countries": await fetch_cctv_countries(),
+        **result,
         "timestamp": datetime.utcnow().isoformat(),
     }
 

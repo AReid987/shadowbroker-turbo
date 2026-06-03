@@ -12,9 +12,10 @@ const ENTITY_COLORS: Record<MapEntity["type"], string> = {
   vessel: "#3b82f6",
   satellite: "#f59e0b",
   ground: "#ef4444",
+  cctv: "#10b981",
 };
 
-function createMarkerElement(type: MapEntity["type"], isCluster: boolean = false, count?: number): HTMLElement {
+function createMarkerElement(type: MapEntity["type"], isCluster: boolean = false, count?: number, size?: number): HTMLElement {
   const el = document.createElement("div");
   if (isCluster && count) {
     el.className = "flex items-center justify-center rounded-full border-2 border-white/20 text-white font-bold text-xs shadow-lg cursor-pointer transition-transform hover:scale-110";
@@ -23,9 +24,10 @@ function createMarkerElement(type: MapEntity["type"], isCluster: boolean = false
     el.style.backgroundColor = "rgba(34, 197, 94, 0.8)";
     el.innerText = String(count);
   } else {
+    const pixelSize = size || 12;
     el.className = "rounded-full border-2 border-white/30 shadow-md cursor-pointer transition-transform hover:scale-125";
-    el.style.width = "12px";
-    el.style.height = "12px";
+    el.style.width = `${pixelSize}px`;
+    el.style.height = `${pixelSize}px`;
     el.style.backgroundColor = ENTITY_COLORS[type];
   }
   return el;
@@ -81,7 +83,7 @@ export function LiveMap() {
     };
   }, []);
 
-  // Simple clustering: group nearby points
+  // Simple clustering: group nearby points by type
   const clusters = useMemo(() => {
     const groups: MapEntity[][] = [];
     const visited = new Set<string>();
@@ -94,6 +96,8 @@ export function LiveMap() {
 
       for (const other of entities) {
         if (visited.has(other.id)) continue;
+        // Only cluster same-type entities (don't mix CCTV with flights)
+        if (entity.type !== other.type) continue;
         const dLat = Math.abs(entity.position.lat - other.position.lat);
         const dLng = Math.abs(entity.position.lng - other.position.lng);
         if (dLat < CLUSTER_DISTANCE && dLng < CLUSTER_DISTANCE) {
@@ -132,7 +136,7 @@ export function LiveMap() {
         markersRef.current.push(marker);
       } else {
         const entity = group[0];
-        const el = createMarkerElement(entity.type);
+        const el = createMarkerElement(entity.type, false, undefined, entity.type === "cctv" ? 8 : 12);
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat([entity.position.lng, entity.position.lat])
           .addTo(map);
@@ -197,9 +201,13 @@ export function LiveMap() {
             <span className="h-2 w-2 rounded-full bg-[#f59e0b]" />
             <span className="text-sb-muted">Satellites</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <span className="h-2 w-2 rounded-full bg-[#ef4444]" />
             <span className="text-sb-muted">Ground</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#10b981]" />
+            <span className="text-sb-muted">CCTV</span>
           </div>
         </div>
       </div>

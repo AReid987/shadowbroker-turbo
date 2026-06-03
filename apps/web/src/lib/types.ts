@@ -24,7 +24,7 @@ export type ThemeMode = 'dark' | 'darker' | 'system';
 // Map types
 export interface MapEntity {
   id: string;
-  type: 'flight' | 'vessel' | 'satellite' | 'ground';
+  type: 'flight' | 'vessel' | 'satellite' | 'ground' | 'cctv';
   position: GeoPoint;
   label: string;
   heading?: number;
@@ -136,6 +136,11 @@ export interface CCTVCamera {
   label: string;
   status: string;
   timestamp: string;
+  lat?: number;
+  lon?: number;
+  source_agency?: string;
+  media_type?: 'image' | 'video' | 'mjpeg' | 'hls' | 'embed' | 'satellite';
+  refresh_rate_seconds?: number;
 }
 
 export interface CCTVCountry {

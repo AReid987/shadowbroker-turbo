@@ -72,6 +72,7 @@ interface DashboardState {
   setCctvCountries: (countries: CCTVCountry[]) => void;
   setCctvSelectedCountry: (country: string | null) => void;
   refreshCctv: (country?: string, limit?: number) => Promise<void>;
+  refreshCctvPipeline: () => Promise<void>;
 }
 
 export const useDashboardStore = create<DashboardState>((set, get) => ({
@@ -86,9 +87,25 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
   refreshMap: async () => {
     try {
-      const [f, v, s] = await Promise.all([api.flights(), api.vessels(), api.satellites()]);
+      const [f, v, s, c] = await Promise.all([api.flights(), api.vessels(), api.satellites(), api.cctv(undefined, 200)]);
       const all = [...f.flights, ...v.vessels, ...s.satellites] as MapEntity[];
-      set({ mapEntities: all, backendOnline: true });
+      // Include CCTV cameras with lat/lon on the map
+      const cctvEntities: MapEntity[] = (c.cameras as CCTVCamera[])
+        .filter((cam) => typeof cam.lat === "number" && typeof cam.lon === "number")
+        .map((cam) => ({
+          id: cam.id,
+          type: "cctv" as const,
+          position: { lat: cam.lat!, lng: cam.lon! },
+          label: cam.label || cam.city || "Camera",
+          metadata: {
+            source: cam.source_agency,
+            media_type: cam.media_type,
+            url: cam.url,
+            refresh_rate: cam.refresh_rate_seconds,
+          },
+          timestamp: cam.timestamp,
+        }));
+      set({ mapEntities: [...all, ...cctvEntities], backendOnline: true });
     } catch {
       set({ backendOnline: false });
     }
@@ -196,6 +213,24 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     try {
       const [camData, countryData] = await Promise.all([
         api.cctv(country || undefined, limit),
+        api.cctvCountries(),
+      ]);
+      set({
+        cctvCameras: camData.cameras as CCTVCamera[],
+        cctvTotal: camData.total,
+        cctvCountries: countryData.countries as CCTVCountry[],
+        backendOnline: true,
+      });
+    } catch {
+      set({ backendOnline: false });
+    }
+  },
+  refreshCctvPipeline: async () => {
+    try {
+      await api.cctvRefresh();
+      // Re-fetch after refresh
+      const [camData, countryData] = await Promise.all([
+        api.cctv(undefined, 50),
         api.cctvCountries(),
       ]);
       set({

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { MapEntity } from "@/lib/types";
-import { Plane, Ship, Satellite, MapPin } from "lucide-react";
+import { Plane, Ship, Satellite, MapPin, Video } from "lucide-react";
 
 interface MapPopupProps {
   entity: MapEntity;
@@ -14,6 +14,7 @@ const typeIcons = {
   vessel: Ship,
   satellite: Satellite,
   ground: MapPin,
+  cctv: Video,
 };
 
 export function MapPopup({ entity, onClose }: MapPopupProps) {
@@ -66,6 +67,18 @@ export function MapPopup({ entity, onClose }: MapPopupProps) {
           <div className="flex justify-between">
             <span className="text-sb-muted">Heading</span>
             <span className="text-sb-text">{entity.heading.toFixed(0)}°</span>
+          </div>
+        )}
+        {!!entity.metadata?.source && (
+          <div className="flex justify-between">
+            <span className="text-sb-muted">Source</span>
+            <span className="text-sb-text">{String(entity.metadata.source as string)}</span>
+          </div>
+        )}
+        {!!entity.metadata?.media_type && (
+          <div className="flex justify-between">
+            <span className="text-sb-muted">Media</span>
+            <span className="text-sb-text capitalize">{String(entity.metadata.media_type as string)}</span>
           </div>
         )}
       </div>

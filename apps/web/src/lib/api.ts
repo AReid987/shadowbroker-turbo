@@ -35,4 +35,5 @@ export const api = {
     return fetchJson<{ cameras: unknown[]; total: number; timestamp: string }>(`/api/cctv?${params}`);
   },
   cctvCountries: () => fetchJson<{ countries: unknown[]; timestamp: string }>("/api/cctv/countries"),
+  cctvRefresh: () => fetchJson<{ status: string; counts: Record<string, number>; total: number; timestamp: string }>("/api/cctv/refresh", { method: "POST" }),
 };

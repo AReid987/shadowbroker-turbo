@@ -37,3 +37,7 @@ npm-debug.log*
 __pycache__/
 *.pyc
 .vercel/output
+
+# Local data
+apps/api/data/
+*.db
