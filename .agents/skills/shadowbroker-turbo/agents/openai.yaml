@@ -1,0 +1,6 @@
+interface:
+  display_name: "Shadowbroker Turbo"
+  short_description: "Repo-specific patterns and workflows for shadowbroker-turbo"
+  default_prompt: "Use the shadowbroker-turbo repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
